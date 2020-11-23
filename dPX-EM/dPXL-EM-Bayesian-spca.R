@@ -194,7 +194,7 @@ if (is.null(lambda0.int) == F) {
             sapply(1:p, FUN = function(j){dlaplace(beta[j,], s = 1/lambda0, log = T)}))
       }
     }
-    gamma.hat <- exp(gamma1)^power / (exp(gamma1)^power + exp(gamma0)^power)
+    gamma.hat <- exp(gamma1)^power*theta / (exp(gamma1)^power*theta + exp(gamma0)^power*(1-theta))
     penalty <- gamma.hat * lambda1 + (1-gamma.hat) * lambda0
     
     # -------------- update theta -------------- #
