@@ -7,4 +7,4 @@ if otherwise. The outputs of the main function, VBsparsePCA, include the mean an
 of the loadings matrix, the score functions, the variable selection results, and the estimated
 variance of the random noise. 
 
-See *VBsparsePCA.pdf* file for details.
+See *VBsparsePCA.pdf* for details.
