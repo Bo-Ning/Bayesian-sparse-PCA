@@ -75,7 +75,8 @@ The user is also allowed to change the default values of the parameters of each 
 }
 \details{
 The model is
-\deqn{X_i = \theta w_i + \sigma \epsilon_i, \epsilon \sim N(0,I_p)}
+\deqn{X_i = \theta w_i + \sigma \epsilon_i}
+where \eqn{w_i \sim N(0, I_r), \epsilon \sim N(0,I_p)}.
 
 The spike and slab prior is given by
 

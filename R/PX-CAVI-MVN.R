@@ -127,12 +127,12 @@ spca.cavi.mvn <- function(
       z.hat.old <- z.theta <- z
     }
 
-    z.theta.mean <- theta.mean*z.theta # obtain theta.mean * z
-    z.theta.var <- diag(theta.var) * z.theta # obtain z * theta.var ???
+    z.theta.mean <- theta.mean * z.theta # obtain theta.mean * z
 
     if (jointly.row.sparse == T) {
       var.w <- solve(crossprod(z.theta.mean)/sig2 + sum(z.theta)*(theta.var) + diag(r)) # var of w
     } else {
+      z.theta.var <- diag(theta.var) * z.theta # obtain z * theta.var
       if (r == 1) {
         var.w <- solve(crossprod(z.theta.mean)/sig2 + sum(z.theta.var) + diag(r))
       } else {

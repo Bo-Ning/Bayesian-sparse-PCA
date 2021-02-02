@@ -1,6 +1,6 @@
 #' Function for the PX-CAVI algorithm using the Laplace slab
 #'
-#'#' This function employs the PX-CAVI algorithm proposed in Ning (2020).
+#' This function employs the PX-CAVI algorithm proposed in Ning (2020).
 #' The \eqn{g} in the slab density of the spike and slab prior is chosen to be the Laplace density, i.e.,
 #' \eqn{N(0, \sigma^2/\lambda_1 I_r)}.
 #' Details of the model and the prior can be found in the Details section in the description of the `VBsparsePCA` function.

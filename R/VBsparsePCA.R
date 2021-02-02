@@ -10,7 +10,8 @@
 #'
 #'
 #' The model is
-#' \deqn{X_i = \theta w_i + \sigma \epsilon_i, \epsilon \sim N(0,I_p)}
+#' \deqn{X_i = \theta w_i + \sigma \epsilon_i}
+#' where \eqn{w_i \sim N(0, I_r), \epsilon \sim N(0,I_p)}.
 #'
 #' The spike and slab prior is given by
 #'
@@ -133,9 +134,32 @@ VBsparsePCA <- function(
     } else {
       warning("The input slab prior is invalid")
     }
-    return(list(iter = result$iter, selection = result$selection,
-                theta.mean = result$theta.mean, theta.var  = result$theta.var,
-                sig2 = result$sig2, obj.fn = result$obj.fn))
+
+
+    # collect result
+    selection <- result$selection
+    loadings <- as.matrix(result$theta.mean)
+    scores <- as.matrix(dat %*% svd(loadings)$u)
+    uncertainty <- result$theta.var
+    sig2 <- result$sig2
+    obj.fn <- result$obj.fn
+
+    # rename the loadings and scores
+    # rename the loadings and scores
+    if (is.null(colnames(dat)) == F) {
+      rownames(loadings) <- colnames(dat)
+    }
+    coln <- paste("PC", rep(1:r), sep = "")
+    colnames(loadings) <- coln
+
+    if (is.null(rownames(dat)) == F) {
+      rownames(scores) <- rownames(dat)
+    }
+    colnames(scores) <- coln
+
+    return(list(iter = result$iter, selection = selection,
+                loadings = loadings, uncertainty  = uncertainty,
+                scores = scores, sig2 = sig2, obj.fn = obj.fn))
 
   } else if (r > 1) {
 
