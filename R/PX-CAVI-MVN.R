@@ -4,7 +4,7 @@
 #' This function employs the PX-CAVI algorithm proposed in Ning (2020).
 #' The \eqn{g} in the slab density of the spike and slab prior is chosen to be the multivariate normal distribution, i.e.,
 #' \eqn{N(0, \sigma^2/\lambda_1 I_r)}.
-#' Details of the model and the prior can be found in the Details section in the description of the `VBsparsePCA` function.
+#' Details of the model and the prior can be found in the Details section in the description of the `VBsparsePCA()` function.
 #'
 #'
 #'@param x Data an \eqn{n*p} matrix.
@@ -13,7 +13,7 @@
 #'@param max.iter The maximum number of iterations for running the algorithm.
 #'@param eps The convergence threshold; the default is \eqn{10^{-4}}.
 #'@param jointly.row.sparse The default is true, which means that the jointly row sparsity assumption is used; one could not use this assumptio by changing it to false.
-#'@param sig2.true The default is false, \eqn{sigma^2} will be estimated; if sig2 is known and its value is given, then \eqn{sigma^2} will not be estimated.
+#'@param sig2.true The default is false, \eqn{\sigma^2} will be estimated; if sig2 is known and its value is given, then \eqn{\sigma^2} will not be estimated.
 #'@param threshold The threshold to determine whether \eqn{\gamma_j} is 0 or 1; the default value is 0.5.
 #'@param theta.int The initial value of theta mean; if not provided, the algorithm will estimate it using PCA.
 #'@param theta.var.int The initial value of theta.var; if not provided, the algorithm will set it to be 1e-3*diag(r).
@@ -30,12 +30,35 @@
 #' \item{sig2}{Variance of the noise.}
 #' \item{obj.fn}{A vector contains the value of the objective function of each iteration. It can be used to check whether the algorithm converges}
 #'
-#'
+#'@examples
+#' #In this example, the first 20 rows in the loadings matrix are nonzero, the rank is 1
+#' set.seed(2021)
+#' library(MASS)
+#' library(pracma)
+#' n <- 200
+#' p <- 1000
+#' s <- 20
+#' r <- 1
+#' sig2 <- 0.1
+#' # generate eigenvectors
+#' U.s <- randortho(s, type = c("orthonormal"))
+#' U <- rep(0, p)
+#' U[1:s] <- as.vector(U.s[, 1:r])
+#' s.star <- rep(0, p)
+#' s.star[1:s] <- 1
+#' eigenvalue <- seq(20, 10, length.out = r)
+#' # generate Sigma
+#' theta.true <- U * sqrt(eigenvalue)
+#' Sigma <- tcrossprod(theta.true) + sig2*diag(p)
+#' # generate n*p dataset
+#' X <- t(mvrnorm(n, mu = rep(0, p), Sigma = Sigma))
+#' result <- spca.cavi.mvn(x = X, r = 1)
+#' loadings <- result$theta.mean
 #' @export
 
 spca.cavi.mvn <- function(
   x, r, lambda = 1, max.iter = 100, eps = 1e-4,
-  jointly.row.sparse = T, sig2.true = NA,
+  jointly.row.sparse = TRUE, sig2.true = NA,
   threshold = 0.5, theta.int = NA, theta.var.int = NA,
   kappa.para1 = NA, kappa.para2 = NA, sigma.a = NA,
   sigma.b = NA
@@ -47,7 +70,7 @@ spca.cavi.mvn <- function(
 
   # initialize theta.hat and theta.var
   svd.res <- svd(x)
-  if (is.na(theta.int) == T) {
+  if (is.na(theta.int) == TRUE) {
     if (r == 1) {
       theta.mean <- as.matrix((t(svd.res$u) %*% x)[1, ]) / sqrt(n-1)
     } else {
@@ -57,7 +80,7 @@ spca.cavi.mvn <- function(
     theta.mean <- theta.int
   }
 
-  if (is.na(theta.var.int) == T) {
+  if (is.na(theta.var.int) == TRUE) {
     theta.var <- 1e-3*diag(r)
   } else {
     theta.var <- theta.var.int
@@ -83,28 +106,28 @@ spca.cavi.mvn <- function(
 
   # choose hyperparameter for priors
   # para1 for the prior of theta
-  if (is.na(kappa.para1) == T) {
+  if (is.na(kappa.para1) == TRUE) {
     kappa.para1 <- 1
   } else {
     kappa.para1 <- kappa.para1
   }
 
   # para2 for the prior of theta
-  if (is.na(kappa.para2) == T) {
+  if (is.na(kappa.para2) == TRUE) {
     kappa.para2 <- p+1
   } else {
     kappa.para2 <- kappa.para2
   }
 
   # para1 for the prior of sigma
-  if (is.na(sigma.a) == T) {
+  if (is.na(sigma.a) == TRUE) {
     sigma.a <- 1
   } else {
     sigma.a <- sigma.a
   }
 
   # para2 for the prior of sigma
-  if (is.na(sigma.b) == T) {
+  if (is.na(sigma.b) == TRUE) {
     sigma.b <- 2
   } else {
     sigma.b <- sigma.b
@@ -129,7 +152,7 @@ spca.cavi.mvn <- function(
 
     z.theta.mean <- theta.mean * z.theta # obtain theta.mean * z
 
-    if (jointly.row.sparse == T) {
+    if (jointly.row.sparse == TRUE) {
       var.w <- solve(crossprod(z.theta.mean)/sig2 + sum(z.theta)*(theta.var) + diag(r)) # var of w
     } else {
       z.theta.var <- diag(theta.var) * z.theta # obtain z * theta.var
@@ -183,7 +206,7 @@ spca.cavi.mvn <- function(
 
       } else {
 
-        if (jointly.row.sparse == T) {
+        if (jointly.row.sparse == TRUE) {
           term1 <- - 1/(sig2) * sum((mean.w %*% x[, j]) * beta.mean[j, ])
           term2 <- c(1/(2*sig2) * beta.mean[j, ] %*% MSE.w %*% beta.mean[j, ] )
           term3.1 <- sig2 * beta.var %*% MSE.w
@@ -220,7 +243,7 @@ spca.cavi.mvn <- function(
     z.beta.mean <- beta.mean * z
 
     ######################## update sig2 ###########################
-    if (is.na(sig2.true) == T) {
+    if (is.na(sig2.true) == TRUE) {
 
       # evaluate the sum for each j
       sigma.foreach.j <- sapply(1:p, FUN = function(j) {
@@ -282,7 +305,7 @@ spca.cavi.mvn <- function(
     obj.fn <- max(obj.fn1, obj.fn2)
 
     ######################### collect results ############################
-    if (jointly.row.sparse == T) {
+    if (jointly.row.sparse == TRUE) {
       selection.res[, 1,iter] <- z.theta
     } else {
       selection.res[, , iter] <- z.theta
@@ -299,7 +322,7 @@ spca.cavi.mvn <- function(
     }
   }
 
-  if (jointly.row.sparse == T) {
+  if (jointly.row.sparse == TRUE) {
     return(list(iter = iter, selection = selection.res[,1,iter],
                 theta.mean = theta.res[,,iter], theta.var  = theta.var,
                 sig2 = sig2, obj.fn = obj.fn.res[1:iter]))

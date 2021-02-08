@@ -31,7 +31,7 @@ spca.cavi.Laplace(
 
 \item{eps}{The convergence threshold; the default is \eqn{10^{-4}}.}
 
-\item{sig2.true}{The default is false, \eqn{sigma^2} will be estimated; if sig2 is known and its value is given, then \eqn{sigma^2} will not be estimated.}
+\item{sig2.true}{The default is false, \eqn{\sigma^2} will be estimated; if sig2 is known and its value is given, then \eqn{\sigma^2} will not be estimated.}
 
 \item{threshold}{The threshold to determine whether \eqn{\gamma_j} is 0 or 1; the default value is 0.5.}
 
@@ -59,6 +59,31 @@ spca.cavi.Laplace(
 This function employs the PX-CAVI algorithm proposed in Ning (2020).
 The \eqn{g} in the slab density of the spike and slab prior is chosen to be the Laplace density, i.e.,
 \eqn{N(0, \sigma^2/\lambda_1 I_r)}.
-Details of the model and the prior can be found in the Details section in the description of the `VBsparsePCA` function.
+Details of the model and the prior can be found in the Details section in the description of the `VBsparsePCA()` function.
 This function is not capable of handling the case when r > 1. In that case, we recommend to use the multivariate distribution instead.
+}
+\examples{
+#In this example, the first 20 rows in the loadings matrix are nonzero, the rank is 1
+set.seed(2021)
+library(MASS)
+library(pracma)
+n <- 200
+p <- 1000
+s <- 20
+r <- 1
+sig2 <- 0.1
+# generate eigenvectors
+U.s <- randortho(s, type = c("orthonormal"))
+U <- rep(0, p)
+U[1:s] <- as.vector(U.s[, 1:r])
+s.star <- rep(0, p)
+s.star[1:s] <- 1
+eigenvalue <- seq(20, 10, length.out = r)
+# generate Sigma
+theta.true <- U * sqrt(eigenvalue)
+Sigma <- tcrossprod(theta.true) + sig2*diag(p)
+# generate n*p dataset
+X <- t(mvrnorm(n, mu = rep(0, p), Sigma = Sigma))
+result <- spca.cavi.Laplace(x = X, r = 1)
+loadings <- result$theta.mean
 }

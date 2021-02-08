@@ -21,3 +21,8 @@ This function calculates the mean of the folded normal distribution given its lo
 The mean of the folded normal distribution with location \eqn{\mu} and scale \eqn{\sigma^2} is
 \deqn{\sigma \sqrt{2/\pi} \exp(-\mu^2/(2\sigma^2)) + \mu (1-2\Phi(-\mu/\sigma))}.
 }
+\examples{
+#Calculates the mean of the folded normal distribution with mean 0 and var 1
+mean <- foldednorm.mean(0, 1)
+print(mean)
+}

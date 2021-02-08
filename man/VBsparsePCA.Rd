@@ -11,8 +11,8 @@ VBsparsePCA(
   slab.prior = "MVN",
   max.iter = 100,
   eps = 0.001,
-  jointly.row.sparse = T,
-  center.scale = F,
+  jointly.row.sparse = TRUE,
+  center.scale = FALSE,
   sig2.true = NA,
   threshold = 0.5,
   theta.int = NA,
@@ -40,7 +40,7 @@ VBsparsePCA(
 
 \item{center.scale}{The default if false. If true, then the input date will be centered and scaled.}
 
-\item{sig2.true}{The default is false, \eqn{sigma^2} will be estimated; if sig2 is known and its value is given, then \eqn{sigma^2} will not be estimated.}
+\item{sig2.true}{The default is false, \eqn{\sigma^2} will be estimated; if sig2 is known and its value is given, then \eqn{\sigma^2} will not be estimated.}
 
 \item{threshold}{The threshold to determine whether \eqn{\gamma_j} is 0 or 1; the default value is 0.5.}
 
@@ -89,7 +89,7 @@ where \eqn{V_{r,r} = \{A \in R^{r \times r}: A'A = I_r\}} and \eqn{\delta_0} is 
 The density \eqn{g} can be chosen to be the product of independent Laplace distribution (i.e., \eqn{q = 1, m =1}) or the multivariate normal distribution (i.e., \eqn{q = 2, m = 2}).
 }
 \examples{
-\dontrun{#In this example, the first 20 rows in the loadings matrix are nonzero, the rank is 2
+#In this example, the first 20 rows in the loadings matrix are nonzero, the rank is 2
 set.seed(2021)
 library(MASS)
 library(pracma)
@@ -120,13 +120,10 @@ if (r == 1) {
 }
 # generate n*p dataset
 X <- t(mvrnorm(n, mu = rep(0, p), Sigma = Sigma))
-result <- VBsparsePCA(dat = t(X), r = 2, jointly.row.sparse = T, center.scale = F)
+result <- VBsparsePCA(dat = t(X), r = 2, jointly.row.sparse = TRUE, center.scale = FALSE)
 loadings <- result$loadings
 scores <- result$scores
 }
-
-
-}
 \references{
-Ning, B. (2021). Spike and slab Bayesian sparse principal component analysis. Unpublished manuscript.
+Ning, B. (2021). Spike and slab Bayesian sparse principal component analysis. arXiv:2102.00305.
 }

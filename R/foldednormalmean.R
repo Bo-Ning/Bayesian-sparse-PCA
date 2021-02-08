@@ -14,7 +14,12 @@
 #'
 #'@return \item{foldednorm.mean}{The mean of the folded normal distribution of iterations to reach convergence.}
 #'
-#'
+#' @examples
+#' #Calculates the mean of the folded normal distribution with mean 0 and var 1
+#' mean <- foldednorm.mean(0, 1)
+#' print(mean)
+#' @export
+
 foldednorm.mean <- function(mean, var) {
   sqrt(var*2/pi) * exp(-mean^2/(2*var)) + mean*(1-2*pnorm(-mean/sqrt(var)))
 }
